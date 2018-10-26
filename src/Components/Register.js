@@ -34,8 +34,8 @@ class Register extends React.Component {
         data.append('email', email);
         data.append('password', password);
         data.append('passwordConfirm', passwordConfirm);
-        data.append('name', name);
-        fetch('http://localhost:3001/register ', {
+        data.append('username', name);
+        fetch('http://localhost:3001/register', {
             method: 'post',
             body: data
         })

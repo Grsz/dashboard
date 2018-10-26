@@ -1,47 +1,70 @@
 
 import React, { Component } from 'react';
+import '../App.css'
 class Photos extends Component {
   constructor(props){
     super(props);
     this.state = {
         upload: false,
+        file: {}
     }
   }
   switchUpload = () => {
     const { upload } = this.state;
     this.setState({upload: !upload})
   }
+  fileUpload = e => {
+    this.setState({
+      file: e.target.files[0]
+    })
+  }
+  upload = () => {
+    const { file } = this.state;
+    const { username, newImages } = this.props;
+    if(Boolean(file)){
+      const data = new FormData();
+      data.append('file', file);
+      data.append('username', username);
+      console.log(data)
+      fetch('http://localhost:3001/upload', {
+        method: 'post',
+        body: data
+      })
+      .then(res => res.json())
+      .then(images => {
+        console.log(images)
+        this.switchUpload();
+        newImages(images)
+      })
+    }
+  }
   content = () =>{ 
-      const { images, email } = this.props;
+      const { images, username } = this.props;
       const photos = images
         .map(image =>
             <div key={image.id} className="imgCont">
-                <img src={`images/${email}/${image.filename}`} alt={image.id} />
+                <img src={`images/${username}/${image}`} alt={image.id} />
             </div>
         );
-        return <div className="photos">{photos}</div>
+        return <div className="photoLibrary">
+          <div className="upload" onClick={this.switchUpload}>
+              Upload
+          </div>
+          {photos}
+        </div>
     }
   render() {
     return (
       <div className="Photos">
         <header>
         <h1>My Library</h1>
-        <div className="upload" onClick={this.switchUpload}>
-            Upload
-        </div>
         </header>
         {this.content()}
         {this.state.upload &&
         <div className="cover">
-            <form ref='uploadForm' 
-            id='uploadForm' 
-            action='http://localhost:3001/upload' 
-            method='post' 
-            encType="multipart/form-data">
-                <input type="file" name="image" />
-                <input type='submit' value='Upload!' />
-                <button type="reset" value="Cancel" onClick={this.switchUpload}>Cancel</button>
-            </form>
+          <input type="file" id="image" onChange={this.fileUpload} />
+          <button className="uplBtn" onClick={this.upload}>Upload</button>
+          <button className="uplBtn" type="reset" onClick={this.switchUpload}>Cancel</button>
         </div>
         }
       </div>

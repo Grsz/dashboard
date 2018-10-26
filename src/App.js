@@ -3,7 +3,8 @@ import Signin from './Components/Signin';
 import Register from './Components/Register';
 import Parser from 'rss-parser';
 import Sport from './Components/Sport';
-import Photos from './Components/Photos'
+import Photos from './Components/Photos';
+import Tasks from './Components/Tasks';
 import {Pie} from 'react-chartjs-2';
 
 const initialState = {
@@ -77,6 +78,7 @@ getWeather = () => {
 getNews = () => {
   let parser = new Parser();
   parser.parseURL(CORS_PROXY + 'https://feeds.bbci.co.uk/news/rss.xml', (err, feed) => {
+    if(err){return console.log(err)}
     const { title, content, link } = feed.items[0];
     this.setState({
       news: { link, title, content }
@@ -123,19 +125,59 @@ onRouteChange = route => {
   this.setState({route})
 }
 profimg = () => {
-    const { profimg, email } = this.state.user;
+    const { profimg, username } = this.state.user;
     if(Boolean(profimg)){
-        return <img src={"images/" + email + "/" + profimg} alt="profimg" />
+        return <img src={"images/" + username + "/" + profimg} alt="profimg" />
     } else {
         return <img src={"images/empty.png"} alt="profimg" />
     }
+}
+setSelectedTeam = selectedTeam => {
+  this.setState({selectedTeam})
+}
+newImages = images => {
+  const { user } = this.state;
+  this.setState({
+    user: {
+      ...user,
+      images
+    }
+  })
+}
+newTask = task => {
+  const { user } = this.state;
+  this.setState({
+    user: {
+      ...user,
+      tasks: [
+        ...user.tasks,
+        task
+      ]
+    }
+  })
+}
+editTask = editedTask => {
+  const { user } = this.state;
+  const tasks = user.tasks.map(task => {
+    if(task.id === editedTask.id){
+      return editedTask
+    } else {
+      return task
+    }
+  })
+  this.setState({
+    user: {
+      ...user,
+      tasks
+    }
+  })
 }
 content = () => {
     const types = ["Weather", "News", "Sport", "Photos", "Tasks", "Clothes"];
     const { icon, location, desc, temp } = this.state.weather;
     const { title, content, link } = this.state.news;
     const { selectedTeam } = this.state;
-    const { images, email, tasks } = this.state.user;
+    const { images, username, tasks } = this.state.user;
     const createContent = type => {
         switch (type) {
             case "Weather":
@@ -162,15 +204,15 @@ content = () => {
             case "Photos":
               return <div className="container photos" onClick={() => this.onRouteChange("Photos")}>
               {  images.filter((img, i) => i < 4)
-                  .map(img => <div className="imgCont" >
-                    <img src={`images/${email}/${img}`} />
+                  .map(img => <div className="imgContSmall" >
+                    <img src={`images/${username}/${img}`} />
                   </div>)}
               </div>
             case "Tasks":
-              return tasks.filter((t, i) => i < 4)
-              .map(task => <div className="taskCont">
-                <p className="task">{task}</p>
-              </div>)
+              return <div className="container tasks" onClick={() => this.onRouteChange("Tasks")}>
+                {tasks.filter((t, i) => i < 4)
+                .map(task => <p className="task">{task.name}</p>)}
+              </div>
             case "Clothes":
             const { clothes } = this.state;
             const labels = [];
@@ -208,12 +250,8 @@ content = () => {
         </div>
     )
 }
-setSelectedTeam = selectedTeam => {
-  this.setState({selectedTeam})
-}
-//onClick={() => this.onRouteChange(type)}
 renderApp = () => {
-  const { username, images, email } = this.state.user;
+  const { username, images, tasks } = this.state.user;
   const { selectedTeam, sports } = this.state;
   switch (this.state.route) {
     case "home":
@@ -233,7 +271,9 @@ renderApp = () => {
   case "Sport":
   return <Sport selectedTeam={selectedTeam} setSelectedTeam={this.setSelectedTeam} data={sports}/>
   case "Photos":
-  return <Photos images={images} newImages={this.newImages} email={email}/>
+  return <Photos images={images} newImages={this.newImages} username={username}/>
+  case "Tasks":
+  return <Tasks tasks={tasks} editTask={this.editTask} newTask={this.newTask} username={username}/>
     default:
       return <Register loadUser={this.loadedUser} RouteChange={this.onRouteChange}/>
   }
