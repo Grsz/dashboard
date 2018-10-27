@@ -13,7 +13,7 @@
         onSearchChange = event => {
         const { data } = this.props;
           const allteams = data.map(match => match[0] ? match[0] : "");
-          const teams = allteams.filter((item, pos) =>  allteams.indexOf(item) == pos);
+          const teams = allteams.filter((item, pos) =>  Number(allteams.indexOf(item)) === pos);
           const results = teams.filter(team => team.toLowerCase().includes(event.target.value.toLowerCase()));
           this.setState({results});
         }
@@ -48,7 +48,7 @@
       
         render() {
           
-          return <div className='tc'>
+          return <div className="inner">
             <input
                 type='search'
                 placeholder='search teams'

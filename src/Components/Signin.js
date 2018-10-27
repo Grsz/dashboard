@@ -6,7 +6,8 @@ class Signin extends Component {
     super(props);
     this.state = {
         username: '',
-        password: ''
+        password: '',
+        alert: ''
     }
 }
 onEmailChange = (event) => {
@@ -17,6 +18,11 @@ onPasswordChange = (event) => {
 }
 onSubmitSignIn = () => {
     const { username, password } = this.state;
+    if(!Boolean(username) || !Boolean(password)){
+        const alert = "Please enter your username and password";
+        this.setState({alert})
+        return
+    }
     fetch('http://localhost:3001/signin', {
         method: 'post',
         headers: {'Content-Type': 'application/json'},
@@ -24,16 +30,24 @@ onSubmitSignIn = () => {
             username, password
         })
     })
-        .then(response => response.json())
-        .then(user => {
-            if (user.userid){
-                this.props.loadUser(user)
-                this.props.RouteChange('home')
-            }
-        })
+    .then(res => {
+        if(!res.ok){
+            throw new Error("The data you entered is invalid.")
+        } else {
+            return res.json()
+        }
+    })
+    .then(user => {
+        if(Boolean(user.username)){
+            this.props.loadUser(user)
+            this.props.RouteChange('home')
+        }
+    })
+    .catch(err => this.setState({alert: err.message}))
 }
 
     render (){
+        const { alert } = this.state;
         return (
             <div className="form">
                 <h1 className="dev">Dev Challenge</h1>
@@ -45,10 +59,11 @@ onSubmitSignIn = () => {
                     Sign In
                 </button>
                 <p className="signup">New to the challenge?
-                    <a className="link" onClick={() => this.props.RouteChange('register')}>
+                    <span className="link" onClick={() => this.props.RouteChange('register')}>
                         Sign Up
-                    </a>
+                    </span>
                 </p>
+                {Boolean(alert) && <p className="alert">{alert}</p>}
             </div>
         );
     }

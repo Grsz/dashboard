@@ -9,7 +9,8 @@ class Register extends React.Component {
             password: '',
             name: '',
             passwordConfirm: '',
-            profimg: null
+            profimg: null,
+            alert: ""
         }
     }
     onNameChange = event => {
@@ -28,28 +29,44 @@ class Register extends React.Component {
         this.setState({profimg: event.target.files[0]})
     }
     onSubmitSignIn = () => {
-        const { email, password, passwordConfirm, name, profimg } = this.state;
-        let data = new FormData();
-        data.append('profimg', profimg);
-        data.append('email', email);
-        data.append('password', password);
-        data.append('passwordConfirm', passwordConfirm);
-        data.append('username', name);
-        fetch('http://localhost:3001/register', {
-            method: 'post',
-            body: data
-        })
-        .then(response => response.json())
-        .then(user => {
-            console.log(user)
-            if (user.userid){
-                this.props.loadUser(user)
-                this.props.RouteChange('home')
-            }
-        })
-        .catch(err => console.log(err))
+        const fields = {
+            name: "Username",
+            email: "E-mail",
+            password: "Password",
+            passwordConfirm: "Confirm Password",
+            profimg: "profimg"
+        };
+        const missing = Object.keys(fields).filter(field => !Boolean(this.state[field]) && field !== "profimg").map(key => fields[key]);
+        if(missing.length){
+            const multiple = missing.length > 1 ? "s" : "";
+            const alert = `Please fill the field${multiple}: ${missing.join(", ")}.`
+            this.setState({alert})
+            return
+        } else {
+            let data = new FormData();
+            Object.keys(fields).forEach(field => data.append(field, this.state[field]));
+            fetch('http://localhost:3001/register', {
+                method: 'post',
+                body: data
+            })
+            .then(res => {
+                if(!res.ok){
+                    throw new Error("Passwords aren't matching")
+                } else {
+                    return res.json()
+                }
+            })
+            .then(user => {
+                if (user.userid){
+                    this.props.loadUser(user)
+                    this.props.RouteChange('home')
+                }
+            })
+            .catch(err => this.setState({alert: err.message}))
+        }
     }
     render(){
+        const { alert } = this.state;
         return (
             <div className="form">
                 <h1 className="dev">Dev Challenge</h1>
@@ -81,6 +98,7 @@ class Register extends React.Component {
                 <button onClick={this.onSubmitSignIn}>
                     Register
                 </button>
+                {Boolean(alert) && <p className="alert">{alert}</p>}
             </div>
         );
     }

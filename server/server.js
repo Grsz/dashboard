@@ -2,13 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
-const {
-    db
-} = require('./db');
-const path = require('path');
-const mime = require('mime');
+const { config, verifyKey } = require("./db");
+const db = require('knex')(config);
 const fs = require('fs');
 const fileUpload = require('express-fileupload');
+const jsonwebtoken  = require('jsonwebtoken');
 
 
 const app = express();
@@ -16,7 +14,25 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 app.use(fileUpload());
-
+app.post('/', (req, res) => {
+    const { token } = req.body;
+    const decoded = jsonwebtoken.verify(token, verifyKey);
+    if(decoded.username){
+        const { username } = decoded;
+        db('users').where({username})
+            .then(user => userData = user[0])
+            .then(() => db("images").where({username}).select("imgname")
+                .then(images => userData.images = images.map(obj => obj.imgname))
+                .then(() => db("tasks").where({username})
+                    .then(tasks => userData.tasks = tasks.sort((a, b) => Number(a.completed) - Number(b.completed)))
+                    .then(() => res.json(userData))
+                )
+            )
+            .catch(err => res.status(400).json('unable to get user'))
+    } else {
+        res.status(400).json('token not found')
+    }
+})
 app.post('/signin', (req, res) => {
     const {
         password,
@@ -27,22 +43,23 @@ app.post('/signin', (req, res) => {
         .then(data => {
             const isValid = bcrypt.compareSync(password, data[0].hash);
             if (isValid) {
-                let userData = {};
-                db.select('*').from('users').where({username})
-                    .then(user => userData = user[0])
+                let userData;
+                const token = jsonwebtoken.sign({username}, verifyKey)
+                db('users').where({username})
+                    .then(user => userData = {...user[0], token})
                     .then(() => db("images").where({username}).select("imgname")
                         .then(images => userData.images = images.map(obj => obj.imgname))
                         .then(() => db("tasks").where({username})
-                            .then(tasks => userData.tasks = tasks)
+                            .then(tasks => userData.tasks = tasks.sort((a, b) => Number(a.completed) - Number(b.completed)))
                             .then(() => res.json(userData))
                         )
                     )
-                    .catch(err => res.status(400).json('unable to get user'))
+                    .catch(err => res.status(400).json('Unable to get user'))
             } else {
-                res.status(400).json('wrong data')
+                res.status(400).json('The data you entered is invalid')
             }
         })
-        .catch(err => res.status(400).json('wrong data'))
+        .catch(err => res.status(400).json('The data you entered is invalid'))
 })
 app.post('/register', (req, res) => {
     const {
@@ -51,12 +68,15 @@ app.post('/register', (req, res) => {
         password,
         passwordConfirm
     } = req.body;
-    const {
-        profimg
-    } = req.files;
+    let profimg;
+    if(req.files){
+        profimg = req.files.profimg;
+    } else {
+        profimg = "";
+    }
     if (password === passwordConfirm) {
         const hash = bcrypt.hashSync(password);
-        if (profimg !== 'null') {
+        if (Boolean(profimg)) {
             const dir = '../public/images/' + username + "/";
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir);
@@ -78,7 +98,7 @@ app.post('/register', (req, res) => {
             .then(user => {
                 res.json(user[0]);
             })
-            .catch(err => res.status(400).json('unable to register'))
+            .catch(err => res.status(400).json('Unable to register'))
     } else {
         res.status(400).json("Passwords aren't matching")
     }

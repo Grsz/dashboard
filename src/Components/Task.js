@@ -58,7 +58,7 @@ class Task extends Component {
             <p className="tickBox" onClick={this.switchCompleted}>
                 {completed ? "X" : " "}
             </p>
-            <p className="taskName" onClick={this.nameEdit}>{name}</p>
+            <p className={`taskName ${completed ? "completed" : ""}`} onClick={this.nameEdit}>{name}</p>
           </div>
       }
   }

@@ -37,7 +37,7 @@ class Tasks extends Component {
   render() {
       const { name } = this.state;
     return (
-      <div className="Tasks">
+      <div className="inner">
         <div className="task">
             <p className="tickBox" onClick={this.addTask}>+</p>
             <input type="text" onChange={this.newTaskName} placeholder="New task" value={name}/>

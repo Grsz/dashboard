@@ -55,7 +55,7 @@ class Photos extends Component {
     }
   render() {
     return (
-      <div className="Photos">
+      <div className="inner">
         <header>
         <h1>My Library</h1>
         </header>

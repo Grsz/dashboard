@@ -18,10 +18,7 @@
     "fs": "0.0.1-security",
     "jsonwebtoken": "^8.3.0",
     "knex": "^0.15.2",
-    "mime": "^2.3.1",
-    "path": "^0.12.7",
-    "pg": "^7.5.0",
-    "rss-parser": "^3.5.2"
+    "pg": "^7.5.0"
   },
   "devDependencies": {
     "nodemon": "^1.18.4"

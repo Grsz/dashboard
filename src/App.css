@@ -99,7 +99,6 @@ h1{
   border: 1px solid var(--y);
   border-radius: 10px;
   background-color: rgba(255, 255, 255, 0.6);
-  cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -133,8 +132,9 @@ h1{
   align-items: center;
   flex-wrap: wrap
 }
-.news{
+.container.news{
   flex-direction: column;
+  flex-wrap: nowrap
 }
 .col{
   flex: 1;
@@ -154,7 +154,7 @@ canvas{
   width: 200px !important;
   height: 200px !important
 }
-.home{
+.nav{
   background-color: rgba(255, 255, 255, 0.432);
   padding: 10px 20px;
   position: fixed;
@@ -225,8 +225,8 @@ form{
   color: var(--y) !important;
   cursor: pointer;
 }
-.Tasks{
-  width: 100%;
+.inner{
+  width: 100vw;
   position: relative;
   padding: 50px;
 }
@@ -238,11 +238,45 @@ form{
 }
 .task input, .task .taskName{
   flex: 1;
-}
-.taskName{
   text-align: left;
-  margin: 35px calc(calc(100vw - 300px) / 10);
+  margin: 20px;
 }
 .defeatedTeams{
   margin-bottom: 0;
+}
+.innerType{
+  cursor: pointer;
+}
+.alert{
+  width: 100vw;
+  padding: 20px;
+  background-color: brown;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+}
+.completed{
+  text-decoration: line-through;
+}
+.trans-enter {
+  opacity: 0.01;
+  position: absolute;
+}
+
+.trans-enter.trans-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+  position: absolute;
+}
+
+.trans-leave {
+  opacity: 1;
+  position: absolute;
+}
+
+.trans-leave.trans-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
+  position: absolute;
 }
