@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
-import '../App.css'
+import '../App.css';
+import server from '../server';
 class Photos extends Component {
   constructor(props){
     super(props);
@@ -26,7 +27,7 @@ class Photos extends Component {
       data.append('file', file);
       data.append('username', username);
       console.log(data)
-      fetch('http://localhost:3001/upload', {
+      fetch(server + 'upload', {
         method: 'post',
         body: data
       })

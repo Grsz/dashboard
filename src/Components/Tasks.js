@@ -1,7 +1,8 @@
 
 import React, { Component } from 'react';
-import '../App.css'
-import Task from './Task'
+import '../App.css';
+import Task from './Task';
+import server from '../server';
 class Tasks extends Component {
   constructor(props){
     super(props);
@@ -13,7 +14,7 @@ class Tasks extends Component {
     const { name } = this.state;
     const { username, newTask } = this.props;
     if(Boolean(name)){
-        fetch('http://localhost:3001/newtask', {
+        fetch(server + 'newtask', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({username, name})

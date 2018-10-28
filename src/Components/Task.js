@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
-import '../App.css'
+import '../App.css';
+import server from '../server';
 class Task extends Component {
   constructor(props){
     super(props);
@@ -13,7 +14,7 @@ class Task extends Component {
     const { newName } = this.state;
     const { id, editTask } = this.props;
     if(Boolean(newName)){
-        fetch('http://localhost:3001/newtaskname', {
+        fetch(server + 'newtaskname', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({newName, id})
@@ -35,7 +36,7 @@ class Task extends Component {
   }
   switchCompleted = () => {
     const { completed, id, editTask } = this.props;
-    fetch('http://localhost:3001/switchcompleted', {
+    fetch(server + 'switchcompleted', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({completed: !completed, id})

@@ -1,5 +1,6 @@
 import React from 'react';
 import '../App.css';
+import server from '../server';
 
 class Register extends React.Component {
     constructor(props){
@@ -7,14 +8,14 @@ class Register extends React.Component {
         this.state = {
             email: '',
             password: '',
-            name: '',
+            username: '',
             passwordConfirm: '',
             profimg: null,
             alert: ""
         }
     }
     onNameChange = event => {
-        this.setState({name: event.target.value})
+        this.setState({username: event.target.value})
     }
     onEmailChange = event => {
         this.setState({email: event.target.value})
@@ -30,7 +31,7 @@ class Register extends React.Component {
     }
     onSubmitSignIn = () => {
         const fields = {
-            name: "Username",
+            username: "Username",
             email: "E-mail",
             password: "Password",
             passwordConfirm: "Confirm Password",
@@ -45,7 +46,7 @@ class Register extends React.Component {
         } else {
             let data = new FormData();
             Object.keys(fields).forEach(field => data.append(field, this.state[field]));
-            fetch('http://localhost:3001/register', {
+            fetch(server + 'register', {
                 method: 'post',
                 body: data
             })
