@@ -1,5 +1,6 @@
 import React from 'react';
 import '../App.css';
+import server from './server';
 
 class Register extends React.Component {
     constructor(props){
@@ -45,7 +46,7 @@ class Register extends React.Component {
         } else {
             let data = new FormData();
             Object.keys(fields).forEach(field => data.append(field, this.state[field]));
-            fetch('http://localhost:3001/register', {
+            fetch(server + 'register', {
                 method: 'post',
                 body: data
             })

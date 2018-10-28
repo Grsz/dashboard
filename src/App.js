@@ -7,6 +7,7 @@ import Photos from './Components/Photos';
 import Tasks from './Components/Tasks';
 import {Pie} from 'react-chartjs-2';
 import Task from './Components/Task';
+import server from './server';
 import ReactCSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 
 const initialState = {
@@ -44,7 +45,7 @@ class App extends Component {
   checkSignedIn = () => {
     const token = localStorage.getItem('token')
     token ? 
-      fetch('http://localhost:3001/', {
+      fetch(server + 'checktoken', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({token})

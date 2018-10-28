@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import '../App.css';
+import server from './server';
 
 class Signin extends Component {
   constructor(props){
@@ -23,7 +24,7 @@ onSubmitSignIn = () => {
         this.setState({alert})
         return
     }
-    fetch('http://localhost:3001/signin', {
+    fetch(server +'signin', {
         method: 'post',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
