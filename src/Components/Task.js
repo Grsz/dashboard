@@ -1,11 +1,7 @@
 
 import React, { Component } from 'react';
 import '../App.css';
-<<<<<<< HEAD
 import server from '../server';
-=======
-import server from './server';
->>>>>>> cf04fdc7177a3630e29ab4b70cbcda08799fdab4
 class Task extends Component {
   constructor(props){
     super(props);
